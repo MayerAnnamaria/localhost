@@ -48,8 +48,8 @@ sudo apachectl restart
 ----------------------------------------------------------------------------------
 #Installing php
 
-#ezt kovessem
-https://wpbeaches.com/installing-configuring-apache-on-macos-using-homebrew/
+#Installed httpd, php
+https://getgrav.org/blog/macos-ventura-apache-multiple-php-versions
 
 #
 
