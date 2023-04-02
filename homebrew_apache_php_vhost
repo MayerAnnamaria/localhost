@@ -1,7 +1,8 @@
 #Installing homebrew
 
-#
-
+#chek if homebrew is installed and working
+brew doctor
+#Shows: Your system is ready to brew.
 #
 
 #
@@ -20,10 +21,29 @@
 ----------------------------------------------------------------------------------
 #Installing Apache
 
-#
+#ebben a file-ban a kovetkezot adjuk hozza
+sudo nano /private/etc/apache2/extra/httpd-vhosts.conf
+#add
+<VirtualHost *:80>
+        ServerAdmin mayer_annamaria@yahoo.com
+        DocumentRoot "/Users/mayerannamaria/Sites/spssabccom01.test"
+        ServerName spssabccom01.test
+        ServerAlias www.spssabccom01.test
+        ErrorLog "/private/var/log/apache2/spssabccom01.test-error_log"  
+        CustomLog "/private/var/log/apache2/spssabccom01.test-access_log" common  
+
+</VirtualHost>
+
+#Itt allitom be h hova mutasson a localhost
+sudo nano /etc/apache2/httpd.conf
+
+DocumentRoot "/Library/WebServer/Documents"
+<Directory "/Library/WebServer/Documents">
+change to:
+
 
 #
-
+sudo apachectl restart
 #
 ----------------------------------------------------------------------------------
 #Installing php
