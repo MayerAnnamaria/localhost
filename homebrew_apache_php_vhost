@@ -41,6 +41,8 @@ DocumentRoot "/Library/WebServer/Documents"
 <Directory "/Library/WebServer/Documents">
 change to:
 
+#check where is it installed
+httpd -S
 
 #
 sudo apachectl restart
