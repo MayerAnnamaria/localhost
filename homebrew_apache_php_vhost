@@ -44,7 +44,9 @@ change to:
 
 #
 sudo apachectl restart
-#
+#restart apache
+brew services stop httpd
+brew services start httpd
 ----------------------------------------------------------------------------------
 #Installing php
 
