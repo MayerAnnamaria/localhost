@@ -157,13 +157,31 @@ subl /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
 #When you set up virtual hosts, you will lose your older document root, so you will need to add back support for that first as a virtual host.
 
 <VirtualHost *:80>
-    DocumentRoot "/Users/your_user/Sites"
+    DocumentRoot "/Users/mayerannamaria/Sites"
     ServerName localhost
 </VirtualHost>
 
 <VirtualHost *:443>
-    DocumentRoot "/Users/mayerannamaria/Sites/mytestfolder"
-    ServerName mytestfolder.test
+    DocumentRoot "/Users/mayerannamaria/Sites/spssabcom"
+    ServerName spssabcom.test
+    SSLEngine on
+    SSLCertificateFile "/opt/homebrew/etc/httpd/certs/spssabcom.test.pem"
+    SSLCertificateKeyFile "/opt/homebrew/etc/httpd/certs/spssabcom.test-key.pem"
 </VirtualHost>
+
+<VirtualHost *:443>
+    DocumentRoot "/Users/mayerannamaria/Sites/spssabchu"
+    ServerName spssabchu.test
+    SSLEngine on
+    SSLCertificateFile "/opt/homebrew/etc/httpd/certs/spssabchu.test.pem"
+    SSLCertificateKeyFile "/opt/homebrew/etc/httpd/certs/spssabchu.test-key.pem"
+</VirtualHost>
+
+-----
+As you set up your .test virtual hosts, you may receive a warning such as 
+Warning: DocumentRoot [/Users/your_user/Sites/grav-admin] does not exist when restarting Apache. 
+This just lets you know that the source directory listed for your virtual hosts is not present on the drive. 
+It's an issue that can be resolved by editing this file with the corrected DocumentRoot.
+----
 
 
