@@ -140,4 +140,30 @@ sudo nano /private/etc/apache2/extra/httpd-vhosts.conf
         CustomLog "/private/var/log/apache2/spssabccom01.test-access_log" common  
 
 </VirtualHost>
-#
+################################
+###Virtualhost
+
+#1.#uncomment in /opt/homebrew/etc/httpd/httpd.conf
+subl /opt/homebrew/etc/httpd/httpd.conf
+LoadModule vhost_alias_module lib/httpd/modules/mod_vhost_alias.so
+
+#2.#uncomment this include path
+# Virtual hosts
+Include /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
+
+#3. in /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
+subl /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
+#This file has some instructions already but the important thing to remember is that these rules are matched in order. 
+#When you set up virtual hosts, you will lose your older document root, so you will need to add back support for that first as a virtual host.
+
+<VirtualHost *:80>
+    DocumentRoot "/Users/your_user/Sites"
+    ServerName localhost
+</VirtualHost>
+
+<VirtualHost *:443>
+    DocumentRoot "/Users/mayerannamaria/Sites/mytestfolder"
+    ServerName mytestfolder.test
+</VirtualHost>
+
+
