@@ -19,20 +19,87 @@ brew doctor
 
 #
 ----------------------------------------------------------------------------------
-#Installing Apache
+#Installing Apache################
+#video:https://www.youtube.com/watch?v=Tlu2Prm_UNw
+#https://getgrav.org/blog/macos-ventura-apache-multiple-php-versions
 
-#ebben a file-ban a kovetkezot adjuk hozza
-sudo nano /private/etc/apache2/extra/httpd-vhosts.conf
-#add
-<VirtualHost *:80>
-        ServerAdmin mayer_annamaria@yahoo.com
-        DocumentRoot "/Users/mayerannamaria/Sites/spssabccom01.test"
-        ServerName spssabccom01.test
-        ServerAlias www.spssabccom01.test
-        ErrorLog "/private/var/log/apache2/spssabccom01.test-error_log"  
-        CustomLog "/private/var/log/apache2/spssabccom01.test-access_log" common  
+1.#stop default apache
+sudo apachectl stop
+sudo launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null
 
-</VirtualHost>
+2.#install apache
+brew install httpd
+
+3.#start apache
+brew services start httpd
+
+4.#check in the browser window
+http://localhost:8080
+
+5.######Apache configuration!!!
+subl /opt/homebrew/etc/httpd/httpd.conf
+Listen 8080
+->
+Listen 80
+
+6.#Search for the term DocumentRoot, and you should see the following line:
+DocumentRoot "/opt/homebrew/var/www"
+->
+DocumentRoot "/Users/your_user/Sites"
+
+7.#also change it to:
+<Directory "/Users/your_user/Sites">
+
+8.#In that same <Directory> block you will find an AllowOverride setting, this should be changed as follows:
+AllowOverride None
+->
+AllowOverride All
+
+9.#uncomment this:
+LoadModule rewrite_module lib/httpd/modules/mod_rewrite.so
+
+10.#change this
+User your_user
+Group staff
+
+11.#change ServerName
+#ServerName www.example.com:8080
+->
+ServerName localhost
+
+12.#If you do not have it, then create Sites folder
+mkdir ~/Sites
+echo "<h1>My User Web Root</h1>" > ~/Sites/index.html
+
+13.#Restart apache, check if all ok
+brew services stop httpd
+brew services start httpd
+
+14.#check if url working
+http://localhost
+
+------
+#TROUBLESHOOTING TIPS for apache:
+#1. If you get a message that the browser can't connect to the server, first check to ensure the server is up.
+#You should see a few httpd processes if Apache is up and running.
+ps -aef | grep httpd
+
+#2.Try to restart Apache
+brew services restart httpd
+
+#3. You can watch the Apache error log in a new Terminal tab/window during a restart to see if anything is invalid or causing a problem:
+tail -f /opt/homebrew/var/log/httpd/error_log
+#Meg lehet hasznalni:
+brew services stop httpd
+brew services start httpd
+brew services restart httpd
+
+#check where is apache installed
+httpd -S
+
+-----
+
+
 
 #Itt allitom be h hova mutasson a localhost
 sudo nano /etc/apache2/httpd.conf
@@ -41,14 +108,7 @@ DocumentRoot "/Library/WebServer/Documents"
 <Directory "/Library/WebServer/Documents">
 change to:
 
-#check where is it installed
-httpd -S
 
-#
-sudo apachectl restart
-#restart apache
-brew services stop httpd
-brew services start httpd
 ----------------------------------------------------------------------------------
 #Installing php
 
@@ -66,7 +126,18 @@ https://getgrav.org/blog/macos-ventura-apache-ssl
 #
 
 #
-
+-----
 #
+#ebben a file-ban a kovetkezot adjuk hozza
+sudo nano /private/etc/apache2/extra/httpd-vhosts.conf
+#add
+<VirtualHost *:80>
+        ServerAdmin mayer_annamaria@yahoo.com
+        DocumentRoot "/Users/mayerannamaria/Sites/spssabccom01.test"
+        ServerName spssabccom01.test
+        ServerAlias www.spssabccom01.test
+        ErrorLog "/private/var/log/apache2/spssabccom01.test-error_log"  
+        CustomLog "/private/var/log/apache2/spssabccom01.test-access_log" common  
 
+</VirtualHost>
 #
