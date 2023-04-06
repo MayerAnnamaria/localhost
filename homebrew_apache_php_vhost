@@ -187,21 +187,23 @@ It's an issue that can be resolved by editing this file with the corrected Docum
 ===========================================
 ADDING A NEW VIRTUALHOST: mytest.test
 
-1.in Sites folder create a folder named: mytest
+#1.in Sites folder create a folder named: mytest,
+#create an index.php file in this folder, otherwise it will give a forbidden problem
 
-2.in /etc/hosts add the url: mytest.test
+#2.in /etc/hosts add the url: mytest.test
 sudo nano /etc/hosts
+
 127.0.0.1 localhost spssabchu.test spssabcom.test mytest.test
 ::1 localhost
 fe80::1%lo0 localhost
 
-3. in /opt/homebrew/etc/httpd/certs
+#3. in /opt/homebrew/etc/httpd/certs
 cd /opt/homebrew/etc/httpd/certs
 
-4. create the ssl certification in /opt/homebrew/etc/httpd/certs
+#4. create the ssl certification in /opt/homebrew/etc/httpd/certs
 mkcert mytest.test
 
-5.in /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf add:
+#5.in /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf add:
 sudo nano /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
 
 <VirtualHost *:443>
@@ -218,6 +220,9 @@ sudo nano /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
     SSLCertificateKeyFile "/opt/homebrew/etc/httpd/certs/mytest.test-key.pem"
 </VirtualHost>
 
-6.restart Apache:
+#6.check if apache syntax is ok:
+apachectl configtest
+
+#6.restart Apache:
 brew services stop httpd
 brew services start httpd
