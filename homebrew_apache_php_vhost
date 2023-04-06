@@ -184,4 +184,40 @@ This just lets you know that the source directory listed for your virtual hosts 
 It's an issue that can be resolved by editing this file with the corrected DocumentRoot.
 ----
 
+===========================================
+ADDING A NEW VIRTUALHOST: mytest.test
 
+1.in Sites folder create a folder named: mytest
+
+2.in /etc/hosts add the url: mytest.test
+sudo nano /etc/hosts
+127.0.0.1 localhost spssabchu.test spssabcom.test mytest.test
+::1 localhost
+fe80::1%lo0 localhost
+
+3. in /opt/homebrew/etc/httpd/certs
+cd /opt/homebrew/etc/httpd/certs
+
+4. create the ssl certification in /opt/homebrew/etc/httpd/certs
+mkcert mytest.test
+
+5.in /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf add:
+sudo nano /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
+
+<VirtualHost *:443>
+    DocumentRoot "/Users/mayerannamaria/Sites/mytest"
+    ServerName mytest.test
+    <Directory "/Users/mayerannamaria/Sites/mytest">
+        Options FollowSymLinks
+        AllowOverride All
+        Order allow,deny
+        allow from all
+    </Directory>
+    SSLEngine on
+    SSLCertificateFile "/opt/homebrew/etc/httpd/certs/mytest.test.pem"
+    SSLCertificateKeyFile "/opt/homebrew/etc/httpd/certs/mytest.test-key.pem"
+</VirtualHost>
+
+6.restart Apache:
+brew services stop httpd
+brew services start httpd
