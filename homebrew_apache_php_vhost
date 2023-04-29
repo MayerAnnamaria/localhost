@@ -226,3 +226,13 @@ apachectl configtest
 #6.restart Apache:
 brew services stop httpd
 brew services start httpd
+
+####################################
+install mysql server
+#https://blog.devops.dev/how-to-install-apache-mysql-phpmyadmin-server-on-macos-ventura-c65e68387776
+
+1. Visit https://dev.mysql.com/downloads/mysql/
+Select the ARM 64-bit DMG Archive and download the installer.
+
+2. Visit https://www.phpmyadmin.net/downloads/ to download installer.
+
