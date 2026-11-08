@@ -1,136 +1,258 @@
-#Installing homebrew
+# macOS Local Web Server Setup
 
-#chek if homebrew is installed and working
+**Homebrew · Apache · PHP · Virtual Hosts · SSL · MySQL · phpMyAdmin**
+
+> Setup notes for a local development environment. Commands, configuration values, paths, and original notes are preserved as provided; this document only improves their Markdown presentation.
+
+## Table of Contents
+
+1. [Installing Homebrew](#1-installing-homebrew)
+2. [Installing Apache](#2-installing-apache)
+3. [Apache Troubleshooting](#3-apache-troubleshooting)
+4. [Additional Localhost Configuration](#4-additional-localhost-configuration)
+5. [Installing PHP](#5-installing-php)
+6. [Installing Self-Signed SSL](#6-installing-self-signed-ssl)
+7. [Additional Virtual Host Configuration](#7-additional-virtual-host-configuration)
+8. [Virtual Hosts](#8-virtual-hosts)
+9. [Adding a New Virtual Host](#9-adding-a-new-virtual-host-mytesttest)
+10. [Installing MySQL Server](#10-installing-mysql-server)
+
+---
+
+## 1. Installing Homebrew
+
+**Check if Homebrew is installed and working.**
+
+```bash
 brew doctor
-#Shows: Your system is ready to brew.
-#
+```
 
-#
+Expected output:
 
-#
+```text
+Your system is ready to brew.
+```
 
-#
+---
 
-#
+## 2. Installing Apache
 
-#
+**References:**
+- [Video tutorial](https://www.youtube.com/watch?v=Tlu2Prm_UNw)
+- [macOS Ventura: Apache and multiple PHP versions](https://getgrav.org/blog/macos-ventura-apache-multiple-php-versions)
 
-#
+### Step 1 — Stop default Apache
 
-#
-----------------------------------------------------------------------------------
-#Installing Apache################
-#video:https://www.youtube.com/watch?v=Tlu2Prm_UNw
-#https://getgrav.org/blog/macos-ventura-apache-multiple-php-versions
-
-1.#stop default apache
+```bash
 sudo apachectl stop
 sudo launchctl unload -w /System/Library/LaunchDaemons/org.apache.httpd.plist 2>/dev/null
+```
 
-2.#install apache
+### Step 2 — Install Apache
+
+```bash
 brew install httpd
+```
 
-3.#start apache
+### Step 3 — Start Apache
+
+```bash
 brew services start httpd
+```
 
-4.#check in the browser window
+### Step 4 — Check in the browser window
+
+```text
 http://localhost:8080
+```
 
-5.######Apache configuration!!!
+### Step 5 — Apache configuration
+
+```bash
 subl /opt/homebrew/etc/httpd/httpd.conf
+```
+
+Change:
+
+```apache
 Listen 8080
-->
+```
+
+To:
+
+```apache
 Listen 80
+```
 
-6.#Search for the term DocumentRoot, and you should see the following line:
+### Step 6 — Change `DocumentRoot`
+
+Search for the term `DocumentRoot`, and you should see the following line:
+
+```apache
 DocumentRoot "/opt/homebrew/var/www"
-->
+```
+
+Change to:
+
+```apache
 DocumentRoot "/Users/your_user/Sites"
+```
 
-7.#also change it to:
+### Step 7 — Change the directory path
+
+Also change it to:
+
+```apache
 <Directory "/Users/your_user/Sites">
+```
 
-8.#In that same <Directory> block you will find an AllowOverride setting, this should be changed as follows:
+### Step 8 — Update `AllowOverride`
+
+In that same `<Directory>` block you will find an `AllowOverride` setting, this should be changed as follows:
+
+From:
+
+```apache
 AllowOverride None
-->
+```
+
+To:
+
+```apache
 AllowOverride All
+```
 
-9.#uncomment this:
+### Step 9 — Uncomment the rewrite module
+
+```apache
 LoadModule rewrite_module lib/httpd/modules/mod_rewrite.so
+```
 
-10.#change this
+### Step 10 — Change the user and group
+
+```apache
 User your_user
 Group staff
+```
 
-11.#change ServerName
+### Step 11 — Change `ServerName`
+
+From:
+
+```apache
 #ServerName www.example.com:8080
-->
-ServerName localhost
+```
 
-12.#If you do not have it, then create Sites folder
+To:
+
+```apache
+ServerName localhost
+```
+
+### Step 12 — Create the `Sites` folder, if necessary
+
+```bash
 mkdir ~/Sites
 echo "<h1>My User Web Root</h1>" > ~/Sites/index.html
+```
 
-13.#Restart apache, check if all ok
+### Step 13 — Restart Apache and check if all is OK
+
+```bash
 brew services stop httpd
 brew services start httpd
+```
 
-14.#check if url working
+### Step 14 — Check the URL
+
+```text
 http://localhost
+```
 
-------
-#TROUBLESHOOTING TIPS for apache:
-#1. If you get a message that the browser can't connect to the server, first check to ensure the server is up.
-#You should see a few httpd processes if Apache is up and running.
+---
+
+## 3. Apache Troubleshooting
+
+### 3.1 Check if Apache is running
+
+If you get a message that the browser can't connect to the server, first check to ensure the server is up. You should see a few `httpd` processes if Apache is up and running.
+
+```bash
 ps -aef | grep httpd
+```
 
-#2.Try to restart Apache
+### 3.2 Restart Apache
+
+```bash
 brew services restart httpd
+```
 
-#3. You can watch the Apache error log in a new Terminal tab/window during a restart to see if anything is invalid or causing a problem:
+### 3.3 Monitor the Apache error log
+
+You can watch the Apache error log in a new Terminal tab/window during a restart to see if anything is invalid or causing a problem:
+
+```bash
 tail -f /opt/homebrew/var/log/httpd/error_log
-#Meg lehet hasznalni:
+```
+
+**Meg lehet hasznalni:**
+
+```bash
 brew services stop httpd
 brew services start httpd
 brew services restart httpd
+```
 
-#check where is apache installed
+### 3.4 Check where Apache is installed
+
+```bash
 httpd -S
+```
 
------
+---
 
+## 4. Additional Localhost Configuration
 
+**Itt allitom be h hova mutasson a localhost**
 
-#Itt allitom be h hova mutasson a localhost
+```bash
 sudo nano /etc/apache2/httpd.conf
+```
 
+```apache
 DocumentRoot "/Library/WebServer/Documents"
 <Directory "/Library/WebServer/Documents">
-change to:
+```
 
+**Original note:** `change to:`
 
-----------------------------------------------------------------------------------
-#Installing php
+---
 
-#Installed httpd, php
-https://getgrav.org/blog/macos-ventura-apache-multiple-php-versions
+## 5. Installing PHP
 
-#
+**Original note:** `Installed httpd, php`
 
-#Installing self-signed SSL
-https://getgrav.org/blog/macos-ventura-apache-ssl
-#
+Reference: [macOS Ventura: Apache and multiple PHP versions](https://getgrav.org/blog/macos-ventura-apache-multiple-php-versions)
 
-#
+---
 
-#
+## 6. Installing Self-Signed SSL
 
-#
------
-#
-#ebben a file-ban a kovetkezot adjuk hozza
+Reference: [macOS Ventura: Apache SSL](https://getgrav.org/blog/macos-ventura-apache-ssl)
+
+---
+
+## 7. Additional Virtual Host Configuration
+
+**Ebben a file-ban a kovetkezot adjuk hozza:**
+
+```bash
 sudo nano /private/etc/apache2/extra/httpd-vhosts.conf
-#add
+```
+
+**Add:**
+
+```apache
 <VirtualHost *:80>
         ServerAdmin mayer_annamaria@yahoo.com
         DocumentRoot "/Users/mayerannamaria/Sites/spssabccom01.test"
@@ -140,22 +262,40 @@ sudo nano /private/etc/apache2/extra/httpd-vhosts.conf
         CustomLog "/private/var/log/apache2/spssabccom01.test-access_log" common  
 
 </VirtualHost>
-################################
-###Virtualhost
+```
 
-#1.#uncomment in /opt/homebrew/etc/httpd/httpd.conf
+---
+
+## 8. Virtual Hosts
+
+### Step 1 — Uncomment the module in `httpd.conf`
+
+```bash
 subl /opt/homebrew/etc/httpd/httpd.conf
-LoadModule vhost_alias_module lib/httpd/modules/mod_vhost_alias.so
+```
 
-#2.#uncomment this include path
+```apache
+LoadModule vhost_alias_module lib/httpd/modules/mod_vhost_alias.so
+```
+
+### Step 2 — Uncomment this include path
+
+```apache
 # Virtual hosts
 Include /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
+```
 
-#3. in /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
+### Step 3 — Configure `httpd-vhosts.conf`
+
+```bash
 subl /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
-#This file has some instructions already but the important thing to remember is that these rules are matched in order. 
-#When you set up virtual hosts, you will lose your older document root, so you will need to add back support for that first as a virtual host.
+```
 
+This file has some instructions already but the important thing to remember is that these rules are matched in order.
+
+When you set up virtual hosts, you will lose your older document root, so you will need to add back support for that first as a virtual host.
+
+```apache
 <VirtualHost *:80>
     DocumentRoot "/Users/mayerannamaria/Sites"
     ServerName localhost
@@ -176,36 +316,59 @@ subl /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
     SSLCertificateFile "/opt/homebrew/etc/httpd/certs/spssabchu.test.pem"
     SSLCertificateKeyFile "/opt/homebrew/etc/httpd/certs/spssabchu.test-key.pem"
 </VirtualHost>
+```
 
------
-As you set up your .test virtual hosts, you may receive a warning such as 
-Warning: DocumentRoot [/Users/your_user/Sites/grav-admin] does not exist when restarting Apache. 
-This just lets you know that the source directory listed for your virtual hosts is not present on the drive. 
-It's an issue that can be resolved by editing this file with the corrected DocumentRoot.
-----
+### Virtual Host Directory Warning
 
-===========================================
-ADDING A NEW VIRTUALHOST: mytest.test
+As you set up your `.test` virtual hosts, you may receive a warning such as:
 
-#1.in Sites folder create a folder named: mytest,
-#create an index.php file in this folder, otherwise it will give a forbidden problem
+```text
+Warning: DocumentRoot [/Users/your_user/Sites/grav-admin] does not exist
+```
 
-#2.in /etc/hosts add the url: mytest.test
+when restarting Apache.
+
+This just lets you know that the source directory listed for your virtual hosts is not present on the drive. It's an issue that can be resolved by editing this file with the corrected `DocumentRoot`.
+
+---
+
+## 9. Adding a New Virtual Host: `mytest.test`
+
+### Step 1 — Create the local project directory
+
+In `Sites` folder create a folder named: `mytest`, create an `index.php` file in this folder, otherwise it will give a forbidden problem.
+
+### Step 2 — Add the URL to `/etc/hosts`
+
+```bash
 sudo nano /etc/hosts
+```
 
+```text
 127.0.0.1 localhost spssabchu.test spssabcom.test mytest.test
 ::1 localhost
 fe80::1%lo0 localhost
+```
 
-#3. in /opt/homebrew/etc/httpd/certs
+### Step 3 — Go to the certificates directory
+
+```bash
 cd /opt/homebrew/etc/httpd/certs
+```
 
-#4. create the ssl certification in /opt/homebrew/etc/httpd/certs
+### Step 4 — Create the SSL certificate
+
+```bash
 mkcert mytest.test
+```
 
-#5.in /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf add:
+### Step 5 — Add the virtual host configuration
+
+```bash
 sudo nano /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
+```
 
+```apache
 <VirtualHost *:443>
     DocumentRoot "/Users/mayerannamaria/Sites/mytest"
     ServerName mytest.test
@@ -219,20 +382,33 @@ sudo nano /opt/homebrew/etc/httpd/extra/httpd-vhosts.conf
     SSLCertificateFile "/opt/homebrew/etc/httpd/certs/mytest.test.pem"
     SSLCertificateKeyFile "/opt/homebrew/etc/httpd/certs/mytest.test-key.pem"
 </VirtualHost>
+```
 
-#6.check if apache syntax is ok:
+### Step 6 — Check if Apache syntax is OK
+
+```bash
 apachectl configtest
+```
 
-#6.restart Apache:
+### Step 6 — Restart Apache
+
+```bash
 brew services stop httpd
 brew services start httpd
+```
 
-####################################
-install mysql server
-#https://blog.devops.dev/how-to-install-apache-mysql-phpmyadmin-server-on-macos-ventura-c65e68387776
+---
 
-1. Visit https://dev.mysql.com/downloads/mysql/
-Select the ARM 64-bit DMG Archive and download the installer.
+## 10. Installing MySQL Server
 
-2. Visit https://www.phpmyadmin.net/downloads/ to download installer.
+Reference: [How to install Apache, MySQL and phpMyAdmin on macOS Ventura](https://blog.devops.dev/how-to-install-apache-mysql-phpmyadmin-server-on-macos-ventura-c65e68387776)
 
+### Step 1 — Download the MySQL installer
+
+Visit [MySQL Downloads](https://dev.mysql.com/downloads/mysql/).
+
+Select the **ARM 64-bit DMG Archive** and download the installer.
+
+### Step 2 — Download phpMyAdmin
+
+Visit [phpMyAdmin Downloads](https://www.phpmyadmin.net/downloads/) to download installer.
